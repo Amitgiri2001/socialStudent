@@ -10,6 +10,7 @@ const mongoose = require('mongoose');
 
 const feedRoutes = require('./routes/feed');
 const authRoutes = require('./routes/auth');
+const likeRoutes = require('./routes/like');
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use((req, res, next) => {
 
 app.use('/feed', feedRoutes);
 app.use('/auth', authRoutes);
+app.use('/like', likeRoutes);
 
 
 const uri = process.env.DATABASE_URL;

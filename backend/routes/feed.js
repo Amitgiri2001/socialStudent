@@ -69,4 +69,7 @@ router.use('/post/comment', commentRouter);
 //DELETE /feed/post/:postId
 router.delete('/post/:postId', isAuth, feedController.deletePostById);
 
+//get all posts from 1 user
+router.get('/:userId/posts', feedController.getAllPostsOfUser);
+
 module.exports = router;

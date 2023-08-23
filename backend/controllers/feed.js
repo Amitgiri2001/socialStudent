@@ -7,41 +7,7 @@ const path = require('path');
 //multer
 const multer = require('multer');
 
-
-
-exports.getPosts = (req, res, next) => {
-  //find posts in the database
-  //get the page number
-  const pageNo = req.query.page || 1;
-  let totalItems;
-  const perPage = 2;
-
-  //first call no of documents we have
-  PostModel.find().countDocuments()
-    .then((res) => {
-      totalItems = res;
-      return PostModel.find().skip((pageNo - 1) * perPage).limit(perPage)
-    })
-    .then((posts) => {
-      res.status(200).json({
-        message: "Posts fetch from DB successfully",
-        posts: posts,
-        totalItems: totalItems
-      });
-    })
-    .catch((error) => {
-      console.log(error);
-      res.status(404).json({
-        message: "Posts can't fetch from DB successfully",
-        error: error
-      });
-    });
-
-
-};
-
-
-
+//create one post
 exports.createPost = (req, res, next) => {
   const result = validationResult(req);
   if (result.isEmpty() == false) {
@@ -92,7 +58,39 @@ exports.createPost = (req, res, next) => {
 
 };
 
+//get all posts
+exports.getPosts = (req, res, next) => {
+  //find posts in the database
+  //get the page number
+  const pageNo = req.query.page || 1;
+  let totalItems;
+  const perPage = 2;
 
+  //first call no of documents we have
+  PostModel.find().countDocuments()
+    .then((res) => {
+      totalItems = res;
+      return PostModel.find().skip((pageNo - 1) * perPage).limit(perPage)
+    })
+    .then((posts) => {
+      res.status(200).json({
+        message: "Posts fetch from DB successfully",
+        posts: posts,
+        totalItems: totalItems
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(404).json({
+        message: "Posts can't fetch from DB successfully",
+        error: error
+      });
+    });
+
+
+};
+
+//get one post by id
 exports.getPostById = (req, res, next) => {
   const postId = req.params.postId;
 
@@ -113,7 +111,7 @@ exports.getPostById = (req, res, next) => {
 };
 
 
-//update a post
+//update a post using id
 
 exports.updatePost = (req, res, next) => {
   const postId = req.params.postId;
@@ -178,7 +176,7 @@ exports.updatePost = (req, res, next) => {
 
 
 
-//delete a post
+//delete a post by id
 exports.deletePostById = (req, res, next) => {
   const postId = req.params.postId;
 
@@ -212,6 +210,32 @@ exports.deletePostById = (req, res, next) => {
       });
     })
     .catch(err => { console.log("Error in delete Post"); console.log(err); });
+}
+
+
+//one user all post
+exports.getAllPostsOfUser = async (req, res, next) => {
+
+  //get userId from url
+  const userId = req.params.userId;
+  let userPosts = [];
+
+  const AllPosts = await PostModel.find();
+  if (!AllPosts) {
+    throw new Error("No posts of that user");
+  }
+
+  for (let post of AllPosts) {
+    // console.log(post.creator.toString())
+    if (post.creator.toString() === userId) {
+      userPosts.push(post);
+    }
+  }
+
+  res.status(200).json({
+    message: "all posts fetched successfully",
+    posts: userPosts
+  });
 }
 //delete a file from the directory
 const clearImage = imagePath => {

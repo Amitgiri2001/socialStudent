@@ -21,10 +21,12 @@ const PostSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    like: {
-        type: Number,
-        default: 1
-    },
+    like: [{
+        //type is object of schema
+        type: mongoose.Schema.Types.ObjectId,
+        //reference is the User Model
+        ref: 'User',
+    }],
     comments: [
         {
             type: mongoose.Schema.Types.ObjectId,
@@ -32,7 +34,7 @@ const PostSchema = mongoose.Schema({
         }
 
     ],
-    default: []
+
 
 }, { timestamps: true });
 //this timestamps is allocated to createdAt and updatedAt
