@@ -40,6 +40,7 @@ const upload = multer({
 });
 
 const feedController = require('../controllers/feed');
+const commentRouter = require('../routes/comment');
 
 const router = express.Router();
 
@@ -61,6 +62,9 @@ router.get('/post/:postId', feedController.getPostById);
 
 //PUt /feed/post/:postId
 router.put('/post/:postId', isAuth, upload.single('image'), validations, feedController.updatePost);
+
+//Comment routes
+router.use('/post/comment', commentRouter);
 
 //DELETE /feed/post/:postId
 router.delete('/post/:postId', isAuth, feedController.deletePostById);

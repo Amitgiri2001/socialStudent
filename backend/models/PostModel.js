@@ -20,7 +20,20 @@ const PostSchema = mongoose.Schema({
     imageUrl: {
         type: String,
         required: true
-    }
+    },
+    like: {
+        type: Number,
+        default: 1
+    },
+    comments: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Comment'
+        }
+
+    ],
+    default: []
+
 }, { timestamps: true });
 //this timestamps is allocated to createdAt and updatedAt
 
