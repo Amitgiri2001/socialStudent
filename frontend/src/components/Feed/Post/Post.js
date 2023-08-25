@@ -7,7 +7,7 @@ const post = props => (
   <article className="post">
     <header className="post__header">
       <h3 className="post__meta">
-        Posted by {props.author} on {props.date}
+        Posted by {props.creator} on {props.date}
       </h3>
       <h1 className="post__title">{props.title}</h1>
     </header>
@@ -25,6 +25,11 @@ const post = props => (
       <Button mode="flat" design="danger" onClick={props.onDelete}>
         Delete
       </Button>
+    </div>
+    <div>
+      <p>Likes:{props.likes ? props.likes.length : 0}</p>
+      <p>Comments:{props.comments ? props.comments.length : 0}</p>
+
     </div>
   </article>
 );

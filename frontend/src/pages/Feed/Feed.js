@@ -39,7 +39,7 @@ const Feed = (props) => {
       page--;
       setPostPage(page);
     }
-    console.log("Frontend", props.token)
+    //console.log("Frontend", props.token)
     fetch('http://localhost:8080/feed/posts?page=' + page, {
       headers: {
         Authorization: 'Bearer ' + props.token,
@@ -215,6 +215,8 @@ const Feed = (props) => {
                 title={post.title}
                 image={post.imageUrl}
                 content={post.content}
+                likes={post.like}
+                comments={post.comments}
                 onStartEdit={() => startEditPostHandler(post._id)}
                 onDelete={() => deletePostHandler(post._id, props)}
               />

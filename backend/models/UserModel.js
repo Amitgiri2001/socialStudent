@@ -14,9 +14,20 @@ const userSchema = new Schema({
         type: String,
         required: true,
     },
-    status: {
+    collegeName: {
         type: String,
-        default: 'I am new!',
+    },
+    departmentName: {
+        type: String,
+    },
+    currentYear: {
+        type: Number,
+    },
+    dateOfBirth: {
+        type: Date,
+    },
+    imageUrl: {
+        type: String,
     },
     posts: [{
         type: Schema.Types.ObjectId,

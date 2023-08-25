@@ -1,5 +1,6 @@
 const { validationResult } = require('express-validator');
 const PostModel = require('../models/PostModel');
+const Comment = require('../models/CommentModel');
 const User = require('../models/UserModel');
 const fs = require('fs');
 const path = require('path');
@@ -177,39 +178,44 @@ exports.updatePost = (req, res, next) => {
 
 
 //delete a post by id
-exports.deletePostById = (req, res, next) => {
+exports.deletePostById = async (req, res, next) => {
   const postId = req.params.postId;
 
-  PostModel.findById(postId)
-    .then((post) => {
-      if (!post) {
-        throw new Error("No post found ");
-      }
+  const post = await PostModel.findById(postId);
 
-      //authorization
-      // console.log(req.userId, " ", post.creator.toString());
-      if (req.userId !== post.creator.toString()) {
-        const error = new Error("You are not allowed to update others post.");
-        error.statusCode = 403;
-        throw error;
-      }
-      clearImage(post.imageUrl);
-      return PostModel.findByIdAndDelete(postId);
-    })
-    .then((resPost) => {
-      const userID = req.userId;
-      return User.findById(userID)
+  if (!post) {
+    throw new Error("No post found ");
+  }
 
-    })
-    .then(user => {
-      user.posts.pull(postId);
-      return user.save();
-    }).then((result) => {
-      res.status(200).json({
-        message: "Post deleted successfully",
-      });
-    })
-    .catch(err => { console.log("Error in delete Post"); console.log(err); });
+  //authorization
+  console.log(req.userId, " ", post);
+  if (req.userId !== post.creator.toString()) {
+    const error = new Error("You are not allowed to update others post.");
+    error.statusCode = 403;
+    throw error;
+  }
+  //delete all comments from the post
+  for (let comment of post.comments) {
+    const commentId = comment._id;
+    await Comment.findByIdAndDelete(commentId)
+  }
+  clearImage(post.imageUrl);
+  await PostModel.findByIdAndDelete(postId);
+
+
+  const userID = req.userId;
+  const user = await User.findById(userID);
+
+
+
+  user.posts.pull(postId);
+  await user.save();
+
+  return res.status(200).json({
+    message: "Post deleted successfully",
+  });
+
+
 }
 
 
@@ -237,6 +243,24 @@ exports.getAllPostsOfUser = async (req, res, next) => {
     posts: userPosts
   });
 }
+
+//search posts using title
+exports.searchPostsByTitle = async (req, res, next) => {
+  const searchKeyword = req.query.keyword;
+  try {
+    const posts = await PostModel.find({
+      title: { $regex: new RegExp(searchKeyword, 'i') }
+    }).exec();
+
+    res.status(200).json({
+      message: "search successfully",
+      posts: posts
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
 //delete a file from the directory
 const clearImage = imagePath => {
   const path1 = path.join(__dirname, '..', imagePath);

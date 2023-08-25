@@ -21,9 +21,9 @@ exports.incrementLikes = async (req, res, next) => {
 
     await post.save();
 
-    res.status(200).json({
+    res.status(201).json({
         message: "Post likes successfully",
-        likeCount: post.like.length,
+        likesCount: post.like.length,
         like: post.like
     });
 }

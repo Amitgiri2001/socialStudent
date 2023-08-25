@@ -54,6 +54,9 @@ body('content').trim().isLength({ min: 5 })];
 // GET /feed/posts
 router.get('/posts', isAuth, feedController.getPosts);
 
+//search Post by title
+router.get('/search', feedController.searchPostsByTitle)
+
 // POST /feed/post
 router.post('/post', isAuth, upload.single('image'), validations, feedController.createPost);
 

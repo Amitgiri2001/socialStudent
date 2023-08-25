@@ -1,6 +1,7 @@
 
 const Comment = require('../models/CommentModel');
 const Post = require('../models/PostModel');
+const User = require('../models/UserModel');
 
 exports.postComment = async (req, res, next) => {
     const content = req.body.content;
@@ -58,13 +59,20 @@ exports.getAllComments = async (req, res, next) => {
     const allCommentsIds = post.comments;
     let allComments = [];
     for (let i = 0; i < allCommentsIds.length; i++) {
-        const comment = await Comment.findById(allCommentsIds[i]);
+        const comment = await Comment.findById(allCommentsIds[i]._id);
+        if (!comment) {
+            continue;
+        }
+        let user = await User.findById(comment.user);
+        comment.user = user;
+
         allComments.push(comment);
     }
 
     res.status(200).json({
         message: 'all Comment fetched successfully!',
-        comment: allComments,
+        comments: allComments,
+
 
     });
 };
@@ -109,12 +117,22 @@ exports.deleteComment = async (req, res, next) => {
     //userId get this data from frontend
     // const userId=req.userId;
     const userId = req.body.userId;
+    const postId = req.body.postId;
     console.log(userId + " " + comment.user.toString());
     if (userId !== comment.user.toString()) {
         throw new Error("You are not allowed to update others comment");
     }
 
     await Comment.findByIdAndDelete(commentId);
+    //i have to delete the comment from the post as well
+    const post = await Post.findById(postId);
+
+    if (!post) {
+        throw new Error("Post not found");
+    }
+    console.log(commentId);
+    await post.comments.pull(commentId);
+    await post.save();
 
     res.status(201).json({
         message: 'Comment deleted successfully!',
