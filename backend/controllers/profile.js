@@ -29,3 +29,7 @@ exports.addProfileData = async (req, res, next) => {
     });
 
 }
+
+exports.getProfileData = (req, res) => {
+    res.status(200).json({ message: "User Profile added successfully" })
+}

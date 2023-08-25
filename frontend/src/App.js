@@ -13,6 +13,9 @@ import LoginPage from './pages/Auth/Login';
 import SignupPage from './pages/Auth/Signup';
 import './App.css';
 
+import Profile from './pages/Profile/Profile';
+import ProfileButton from './pages/Profile/ProfileButton';
+
 function App(props) {
   const [showBackdrop, setShowBackdrop] = useState(false);
   const [showMobileNav, setShowMobileNav] = useState(false);
@@ -190,6 +193,16 @@ function App(props) {
     routes = (
       <Switch>
         <Route
+          path="/profile"
+          render={routeProps => (
+            <Profile
+              {...routeProps}
+              userId={userId}
+              token={token}
+            />
+          )}
+        />
+        <Route
           path="/"
           exact
           render={routeProps => (
@@ -206,6 +219,7 @@ function App(props) {
             />
           )}
         />
+
         <Redirect to="/" />
       </Switch>
     );
@@ -236,6 +250,8 @@ function App(props) {
         }
       />
       {routes}
+
+      <ProfileButton userId={userId} />
     </Fragment>
   );
 }
